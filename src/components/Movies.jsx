@@ -1,39 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
 import Pagination from "./Pagination.jsx";
 import MovieCard from "./MovieCard.jsx";
+import axios from "axios";
 
 const Movies = () => {
-  const [movies, setMovies] = useState([
-    {
-      url: "https://fastly.picsum.photos/id/10/2500/1667.jpg?hmac=J04WWC_e",
-      title: "movie1",
-    },
-    {
-      url: "https://fastly.picsum.photos/id/10/2500/1667.jpg?hmac=J04WWC_e",
-      title: "movie2",
-    },
-    {
-      url: "https://fastly.picsum.photos/id/10/2500/1667.jpg?hmac=J04WWC_e",
-      title: "movie3",
-    },
-    {
-      url: "https://fastly.picsum.photos/id/10/2500/1667.jpg?hmac=J04WWC_e",
-      title: "movie4",
-    },
-    {
-      url: "https://fastly.picsum.photos/id/10/2500/1667.jpg?hmac=J04WWC_e",
-      title: "movie5",
-    },
-    {
-      url: "https://fastly.picsum.photos/id/10/2500/1667.jpg?hmac=J04WWC_e",
-      title: "movie6",
-    },
-    {
-      url: "https://fastly.picsum.photos/id/10/2500/1667.jpg?hmac=J04WWC_e",
-      title: "movie7",
-    },
-  ]);
+  const [movies, setMovies] = useState([]);
+  const [watchlist, setWatchlist] = useState([]);
 
   const [page, setPage] = useState(1);
 
@@ -48,6 +21,25 @@ const Movies = () => {
     }
   };
 
+  const addTowatchlist = (movieobj) => {
+    const updatedWatchlist = [...watchlist, movieobj];
+    setWatchlist(updatedWatchlist);
+  };
+
+  const removeFromWatchlist = (movieobj) => {
+    const filteredList = watchlist.filter((movie) => movie.id != movieobj.id);
+    setWatchlist(filteredList);
+  };
+
+  useEffect(() => {
+    axios
+      .get(
+        `https://api.themoviedb.org/3/trending/movie/week?api_key=7c1c2e5060817268146ba228bac06cc0&language=en-US&page=${page}`
+      )
+      .then((res) => {
+        setMovies(res.data.results);
+      });
+  }, [page]);
   return (
     <div>
       <div className="text-2xl font-bold text-center m-5">
@@ -56,7 +48,14 @@ const Movies = () => {
 
       <div className="flex flex-wrap justify-evenly gap-8">
         {movies.map((movieobj) => {
-          return <MovieCard movieobj={movieobj} />;
+          return (
+            <MovieCard
+              movieobj={movieobj}
+              addTowatchlist={addTowatchlist}
+              watchlist={watchlist}
+              removeFromWatchlist={removeFromWatchlist}
+            />
+          );
         })}
       </div>
       <Pagination nextPageFn={handleNext} prevPageFn={handlePrev} page={page} />
