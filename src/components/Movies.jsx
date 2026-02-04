@@ -24,11 +24,13 @@ const Movies = () => {
   const addTowatchlist = (movieobj) => {
     const updatedWatchlist = [...watchlist, movieobj];
     setWatchlist(updatedWatchlist);
+    localStorage.setItem("movies", JSON.stringify(updatedWatchlist));
   };
 
   const removeFromWatchlist = (movieobj) => {
     const filteredList = watchlist.filter((movie) => movie.id != movieobj.id);
     setWatchlist(filteredList);
+    localStorage.setItem("movies", JSON.stringify(filteredList));
   };
 
   useEffect(() => {
@@ -40,6 +42,14 @@ const Movies = () => {
         setMovies(res.data.results);
       });
   }, [page]);
+
+  useEffect(() => {
+    const movies = JSON.parse(localStorage.getItem("movies"));
+    if (movies) {
+      setWatchlist(movies);
+    }
+  }, []);
+
   return (
     <div>
       <div className="text-2xl font-bold text-center m-5">

@@ -11,9 +11,8 @@ const MovieCard = ({
       if (watchlist[i].id === movieobject.id) {
         return true;
       }
-
-      return false;
     }
+    return false;
   };
 
   return (
