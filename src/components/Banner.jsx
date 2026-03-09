@@ -8,10 +8,9 @@ const Banner = () => {
   useEffect(() => {
     axios
       .get(
-        "https://api.themoviedb.org/3/trending/movie/day?api_key=7c1c2e5060817268146ba228bac06cc0&language=en-US&page=1"
+        "https://api.themoviedb.org/3/trending/movie/day?api_key=7c1c2e5060817268146ba228bac06cc0&language=en-US&page=1",
       )
       .then((res) => {
-        console.log(res.data.results[0]);
         const firstmovie = res.data.results[0];
         const firstmovieTitle = firstmovie.title;
         const firstmovieImage = `https://image.tmdb.org/t/p/w1280/${firstmovie.backdrop_path}`;

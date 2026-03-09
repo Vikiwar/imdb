@@ -5,7 +5,7 @@ import Movies from "./Movies";
 const Home = () => {
   return (
     <>
-      <Banner />
+      {/* <Banner /> */}
       <Movies />
     </>
   );

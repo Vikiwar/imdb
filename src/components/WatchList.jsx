@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import genreids from "../constants";
+import { WatchListContext } from "../context/WatchListContext";
 
 const WatchList = () => {
-  const [watchlist, setWatchlist] = useState([]);
+  // const [watchlist, setWatchlist] = useState([]);
   const [search, setSearch] = useState("");
   const [genreList, setGenrelist] = useState([]);
   const [currgenre, setCurrgenre] = useState("");
+  const { watchlist, setWatchlist } = useContext(WatchListContext);
 
   const handleSearch = (e) => {
     setSearch(e.target.value);
@@ -42,16 +44,14 @@ const WatchList = () => {
     let temp = watchlist.map((movie) => {
       return genreids[movie.genre_ids[0]];
     });
-    console.log(temp);
     temp = new Set(temp);
-    console.log(temp);
     setGenrelist(["All Genres", ...temp]);
   }, [watchlist]);
 
   return (
     <>
       <div className=" flex justify-center m-4">
-        {genreList.map((genre) => {
+        {genreList.map((genre, ind) => {
           const isActive = currgenre === genre;
           const baseStyles =
             "flex justify-center items-center h-[3rem] w-[9rem] rounded-xl  text-bold font-white mx-4 hover:cursor-pointer";
@@ -60,6 +60,7 @@ const WatchList = () => {
             <div
               className={`${baseStyles} ${bgColor}`}
               onClick={() => handleFilter(genre)}
+              key={ind}
             >
               {genre}
             </div>

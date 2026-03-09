@@ -3,22 +3,23 @@ import React from "react";
 import Pagination from "./Pagination.jsx";
 import MovieCard from "./MovieCard.jsx";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import PaginationSlice from "../redux/paginationSlice.jsx";
+import fetchingMiddleWare from "../redux/user/middleWare.jsx";
+import Banner from "./Banner.jsx";
 
 const Movies = () => {
-  const [movies, setMovies] = useState([]);
   const [watchlist, setWatchlist] = useState([]);
-
-  const [page, setPage] = useState(1);
+  const { page } = useSelector((state) => state.page);
+  const { movies, loading, error } = useSelector((state) => state.movies);
+  const dispatch = useDispatch();
+  const actions = PaginationSlice.actions;
 
   const handleNext = () => {
-    setPage(page + 1);
+    dispatch(actions.handleNext());
   };
   const handlePrev = () => {
-    if (page == 1) {
-      setPage(page);
-    } else {
-      setPage(page - 1);
-    }
+    dispatch(actions.handlePrev());
   };
 
   const addTowatchlist = (movieobj) => {
@@ -34,13 +35,15 @@ const Movies = () => {
   };
 
   useEffect(() => {
-    axios
-      .get(
-        `https://api.themoviedb.org/3/trending/movie/week?api_key=7c1c2e5060817268146ba228bac06cc0&language=en-US&page=${page}`
-      )
-      .then((res) => {
-        setMovies(res.data.results);
-      });
+    // axios
+    //   .get(
+    //     `https://api.themoviedb.org/3/trending/movie/week?api_key=7c1c2e5060817268146ba228bac06cc0&language=en-US&page=${page}`,
+    //   )
+    //   .then((res) => {
+    //     setMovies(res.data.results);
+    //   });
+
+    dispatch(fetchingMiddleWare(page));
   }, [page]);
 
   useEffect(() => {
@@ -50,26 +53,53 @@ const Movies = () => {
     }
   }, []);
 
-  return (
-    <div>
-      <div className="text-2xl font-bold text-center m-5">
-        <h1> Tremding movies</h1>
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-900 text-white">
+        <p className="text-xl animate-pulse">Loading movie...</p>
       </div>
+    );
+  }
 
-      <div className="flex flex-wrap justify-evenly gap-8">
-        {movies.map((movieobj) => {
-          return (
-            <MovieCard
-              movieobj={movieobj}
-              addTowatchlist={addTowatchlist}
-              watchlist={watchlist}
-              removeFromWatchlist={removeFromWatchlist}
-            />
-          );
-        })}
+  // Error UI
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-900">
+        <p className="text-red-500 text-xl font-semibold">
+          Error: oops something went wrong {error}
+        </p>
       </div>
-      <Pagination nextPageFn={handleNext} prevPageFn={handlePrev} page={page} />
-    </div>
+    );
+  }
+
+  return (
+    <>
+      <Banner></Banner>
+      <div>
+        <div className="text-2xl font-bold text-center m-5">
+          <h1> Tremding movies</h1>
+        </div>
+
+        <div className="flex flex-wrap justify-evenly gap-8">
+          {movies.map((movieobj) => {
+            return (
+              <MovieCard
+                key={movieobj.id}
+                movieobj={movieobj}
+                addTowatchlist={addTowatchlist}
+                watchlist={watchlist}
+                removeFromWatchlist={removeFromWatchlist}
+              />
+            );
+          })}
+        </div>
+        <Pagination
+          nextPageFn={handleNext}
+          prevPageFn={handlePrev}
+          page={page}
+        />
+      </div>
+    </>
   );
 };
 
